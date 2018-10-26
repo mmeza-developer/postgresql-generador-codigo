@@ -321,14 +321,17 @@ public class FileCreator {
 		String classFileNameDelegate=TextFormat.underLineNameToCamelCase(className)+"Delegate";
 		String packageImportDto=PackageCreator.findDtoPackage(packageName);
 		String packageImportDelegate=PackageCreator.findDelegatePackage(packageName);
+		String packageImportDao=PackageCreator.findDaoPackage(packageName);
 		
 		
 		topWriter.writeln ("package " + packageName + ";");
 		topWriter.writeln ("import " +packageImportDto+"."+ classFileNameDto + ";");
 		topWriter.writeln ("import " +packageImportDelegate+"."+ classFileNameDelegate + ";");
+		topWriter.writeln ("import " +packageImportDao+"."+ classFileNameDao + ";");
 		topWriter.writeln ("import java.util.List;");
 		topWriter.writeln ("import org.springframework.beans.factory.annotation.Autowired;");
-		topWriter.writeln ("import org.springframework.stereotype.Repository;");
+		topWriter.writeln ("import org.springframework.stereotype.Service;");
+		topWriter.writeln ("import org.springframework.jdbc.core.JdbcTemplate;");
 		topWriter.writeln ("");
 		
 		topWriter.writeln ("@Service");
@@ -424,7 +427,7 @@ public class FileCreator {
 			if(file.createNewFile()){
 			    System.out.println("Archivo "+className+".java fue creado en "+path);
 			}else{
-				System.out.println("El archivo ya existe en el directorio, será reemplazado");
+				System.out.println("El archivo ya existe en el directorio, serï¿½ reemplazado");
 			}
 			FileWriter fw = new FileWriter(path+"\\"+className+".java", false);
 			fw.write(fileText);	
