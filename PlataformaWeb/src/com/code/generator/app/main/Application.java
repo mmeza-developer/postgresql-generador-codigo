@@ -8,11 +8,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.code.generator.app.dao.KioskeroWebDao;
-import com.code.generator.app.dto.ColumnDto;
-import com.code.generator.app.dto.TableDto;
-import com.code.generator.app.utils.DBJavaConverter;
-import com.code.generator.app.utils.FileCreator;
 import com.code.generator.app.utils.JavaCodeGenerator;
 
 @SpringBootApplication

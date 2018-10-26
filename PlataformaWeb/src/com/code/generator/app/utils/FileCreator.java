@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.ainslec.picocog.PicoWriter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.code.generator.app.dto.ColumnDto;
 
@@ -183,10 +186,15 @@ public class FileCreator {
 		topWriter.writeln ("import " +packageImportDto+"."+ classFileNameDto + ";");
 		topWriter.writeln ("import " +packageImportDao+"."+ classFileNameDao + ";");
 		topWriter.writeln ("import java.util.List;");
+		topWriter.writeln ("import org.springframework.beans.factory.annotation.Autowired;");
+		topWriter.writeln ("import org.springframework.stereotype.Repository;");
 		topWriter.writeln ("");
+		
+		topWriter.writeln ("@Repository");
 		topWriter.writeln_r ("public class "+classFileName+" implements "
 		+TextFormat.underLineNameToCamelCase(className)+"Dao {");
-
+		
+		PicoWriter varSection = topWriter.createDeferredWriter();
 		PicoWriter methodSection = topWriter.createDeferredWriter();
 		PicoWriter mainMethodFind = methodSection.createDeferredWriter();
 		PicoWriter mainMethodFindAll = methodSection.createDeferredWriter();
@@ -194,7 +202,10 @@ public class FileCreator {
 		PicoWriter mainMethodInsertAll = methodSection.createDeferredWriter();
 		PicoWriter mainMethodUpdate = methodSection.createDeferredWriter();
 		PicoWriter mainMethodDelete = methodSection.createDeferredWriter();
-
+		
+		
+		varSection.writeln("@Autowired");
+		varSection.writeln("JdbcTemplate jdbcTemplate;");
 
 		mainMethodFind.writeln("");
 		mainMethodFind.writeln("@Override");
@@ -305,6 +316,8 @@ public class FileCreator {
 		
 		String classFileName=TextFormat.underLineNameToCamelCase(className)+"DelegateImpl";
 		String classFileNameDto=TextFormat.underLineNameToCamelCase(className)+"Dto";
+		String classFileNameDao=TextFormat.underLineNameToCamelCase(className)+"Dao";
+		String classVarFileNameDao=TextFormat.underLineNameToCamelCaseNonFirstLetter(className)+"Dao";
 		String classFileNameDelegate=TextFormat.underLineNameToCamelCase(className)+"Delegate";
 		String packageImportDto=PackageCreator.findDtoPackage(packageName);
 		String packageImportDelegate=PackageCreator.findDelegatePackage(packageName);
@@ -314,7 +327,11 @@ public class FileCreator {
 		topWriter.writeln ("import " +packageImportDto+"."+ classFileNameDto + ";");
 		topWriter.writeln ("import " +packageImportDelegate+"."+ classFileNameDelegate + ";");
 		topWriter.writeln ("import java.util.List;");
+		topWriter.writeln ("import org.springframework.beans.factory.annotation.Autowired;");
+		topWriter.writeln ("import org.springframework.stereotype.Repository;");
 		topWriter.writeln ("");
+		
+		topWriter.writeln ("@Service");
 		topWriter.writeln_r ("public class "+classFileName+" implements "
 		+TextFormat.underLineNameToCamelCase(className)+"Delegate {");
 
@@ -325,6 +342,10 @@ public class FileCreator {
 		PicoWriter mainMethodInsertAll = methodSection.createDeferredWriter();
 		PicoWriter mainMethodUpdate = methodSection.createDeferredWriter();
 		PicoWriter mainMethodDelete = methodSection.createDeferredWriter();
+		PicoWriter varSection = topWriter.createDeferredWriter();
+		
+		varSection.writeln("@Autowired");
+		varSection.writeln("private "+classFileNameDao+" "+classVarFileNameDao+";");
 
 
 		mainMethodFind.writeln("");
