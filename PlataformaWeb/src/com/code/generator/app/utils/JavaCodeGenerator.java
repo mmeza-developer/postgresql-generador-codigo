@@ -52,6 +52,9 @@ public class JavaCodeGenerator {
     			FileCreator.createDelegateInterfaceJavaFile(tableName,  packageBase+PACKAGE_DELEGATE);
     			FileCreator.createDelegateClassJavaFile(tableName,  packageBase+PACKAGE_DELEGATE_IMPL);
     		}
+    		if(createService) {
+    			FileCreator.createServiceClassJavaFile(tableName,  packageBase+PACKAGE_SERVICE);
+    		}
 		
 	}
 	

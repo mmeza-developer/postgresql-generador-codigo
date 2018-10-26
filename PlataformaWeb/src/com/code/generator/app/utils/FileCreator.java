@@ -10,9 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.ainslec.picocog.PicoWriter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 import com.code.generator.app.dto.ColumnDto;
 
@@ -103,7 +100,7 @@ public class FileCreator {
 		
 		topWriter.writeln_l("}");
 		// To extract the source code, call .toString()
-		System.out.println(topWriter.toString());
+		//System.out.println(topWriter.toString());
 		String path=null;
 		try {
 			path=PackageCreator.packageToDirectory(packageName);
@@ -168,7 +165,7 @@ public class FileCreator {
 			e.printStackTrace();
 		}
 		createFile(classFileName,path,topWriter.toString());
-		System.out.println(topWriter.toString());
+		//System.out.println(topWriter.toString());
 		printStatus(classFileName,true);
 	}
 	
@@ -188,6 +185,7 @@ public class FileCreator {
 		topWriter.writeln ("import java.util.List;");
 		topWriter.writeln ("import org.springframework.beans.factory.annotation.Autowired;");
 		topWriter.writeln ("import org.springframework.stereotype.Repository;");
+		topWriter.writeln ("import org.springframework.jdbc.core.JdbcTemplate;");
 		topWriter.writeln ("");
 		
 		topWriter.writeln ("@Repository");
@@ -251,7 +249,7 @@ public class FileCreator {
 			e.printStackTrace();
 		}
 		createFile(classFileName,path,topWriter.toString());
-		System.out.println(topWriter.toString());
+		//System.out.println(topWriter.toString());
 		printStatus(classFileName,true);
 	}
 	
@@ -308,7 +306,7 @@ public class FileCreator {
 			e.printStackTrace();
 		}
 		createFile(classFileName,path,topWriter.toString());
-		System.out.println(topWriter.toString());
+		//System.out.println(topWriter.toString());
 		printStatus(classFileName,true);
 	}
 	public static void createDelegateClassJavaFile(String className,String packageName) {
@@ -331,13 +329,13 @@ public class FileCreator {
 		topWriter.writeln ("import java.util.List;");
 		topWriter.writeln ("import org.springframework.beans.factory.annotation.Autowired;");
 		topWriter.writeln ("import org.springframework.stereotype.Service;");
-		topWriter.writeln ("import org.springframework.jdbc.core.JdbcTemplate;");
 		topWriter.writeln ("");
 		
 		topWriter.writeln ("@Service");
 		topWriter.writeln_r ("public class "+classFileName+" implements "
 		+TextFormat.underLineNameToCamelCase(className)+"Delegate {");
 
+		PicoWriter varSection = topWriter.createDeferredWriter();
 		PicoWriter methodSection = topWriter.createDeferredWriter();
 		PicoWriter mainMethodFind = methodSection.createDeferredWriter();
 		PicoWriter mainMethodFindAll = methodSection.createDeferredWriter();
@@ -345,7 +343,7 @@ public class FileCreator {
 		PicoWriter mainMethodInsertAll = methodSection.createDeferredWriter();
 		PicoWriter mainMethodUpdate = methodSection.createDeferredWriter();
 		PicoWriter mainMethodDelete = methodSection.createDeferredWriter();
-		PicoWriter varSection = topWriter.createDeferredWriter();
+		
 		
 		varSection.writeln("@Autowired");
 		varSection.writeln("private "+classFileNameDao+" "+classVarFileNameDao+";");
@@ -387,7 +385,7 @@ public class FileCreator {
 		
 		topWriter.writeln_l("}");
 		// To extract the source code, call .toString()
-		System.out.println(topWriter.toString());
+		//System.out.println(topWriter.toString());
 		String path=null;
 		try {
 			path=PackageCreator.packageToDirectory(packageName);
@@ -399,8 +397,101 @@ public class FileCreator {
 		printStatus(classFileName,true);
 	}
 	
+	public static void createServiceClassJavaFile(String className,String packageName) {
+		PicoWriter topWriter = new PicoWriter();
+		
+		String classFileName=TextFormat.underLineNameToCamelCase(className)+"Service";
+		String classFileNameDto=TextFormat.underLineNameToCamelCase(className)+"Dto";
+		String classFileNameDelegate=TextFormat.underLineNameToCamelCase(className)+"Delegate";
+		String varNameDelegate=TextFormat.underLineNameToCamelCaseNonFirstLetter(className)+"Delegate";
+		String packageImportDto=PackageCreator.findDtoPackage(packageName);
+		String packageImportDelegate=PackageCreator.findDelegatePackage(packageName);
+		
+		
+		topWriter.writeln ("package " + packageName + ";");
+		topWriter.writeln ("import " +packageImportDto+"."+ classFileNameDto + ";");
+		topWriter.writeln ("import " +packageImportDelegate+"."+ classFileNameDelegate + ";");
+		topWriter.writeln ("import java.util.List;");
+		topWriter.writeln ("import org.springframework.beans.factory.annotation.Autowired;");
+		
+		topWriter.writeln ("import java.util.List;");
+		topWriter.writeln ("import org.springframework.web.bind.annotation.RequestBody;");
+		topWriter.writeln ("import org.springframework.web.bind.annotation.RequestMapping;");
+		topWriter.writeln ("import org.springframework.web.bind.annotation.RequestMethod;");
+		topWriter.writeln ("import org.springframework.web.bind.annotation.RequestParam;");
+		topWriter.writeln ("import org.springframework.web.bind.annotation.RestController;");
+		topWriter.writeln ("");
+		
+		topWriter.writeln ("@RestController");
+		topWriter.writeln ("@RequestMapping(\"\\"+className.toLowerCase()+"\")");
+		topWriter.writeln_r ("public class "+classFileName+"{"
+		);
+		PicoWriter varSection = topWriter.createDeferredWriter();
+		PicoWriter methodSection = topWriter.createDeferredWriter();
+		PicoWriter mainMethodFind = methodSection.createDeferredWriter();
+		PicoWriter mainMethodFindAll = methodSection.createDeferredWriter();
+		PicoWriter mainMethodInsert = methodSection.createDeferredWriter();
+		PicoWriter mainMethodInsertAll = methodSection.createDeferredWriter();
+		PicoWriter mainMethodUpdate = methodSection.createDeferredWriter();
+		PicoWriter mainMethodDelete = methodSection.createDeferredWriter();
+	
+		
+		varSection.writeln("@Autowired");
+		varSection.writeln("private "+classFileNameDelegate+" "+varNameDelegate+";");
+
+
+		mainMethodFind.writeln("");
+		mainMethodFind.writeln("@RequestMapping(value = \"\\find"+className+"ById\", method = RequestMethod.GET)");
+		mainMethodFind.writeln_r("public " + classFileNameDto +" findById(int id){");
+		mainMethodFind.writeln("return null;");
+		mainMethodFind.writeln_l("}");
+		
+		mainMethodFindAll.writeln("");
+		mainMethodFindAll.writeln("@RequestMapping(value = \"\\findAll"+className+"\", method = RequestMethod.GET)");
+		mainMethodFindAll.writeln_r("public List<" +classFileNameDto+"> findAll(){");
+		mainMethodFindAll.writeln("return null;");
+		mainMethodFindAll.writeln_l("}");
+		
+		mainMethodInsert.writeln("");
+		mainMethodInsert.writeln("@RequestMapping(value = \"\\add"+className+"\", method = RequestMethod.POST");
+		mainMethodInsert.writeln_r("public void insert("+classFileNameDto+" data){");
+		mainMethodInsert.writeln_l("}");
+		
+		mainMethodInsertAll.writeln("");
+		mainMethodInsertAll.writeln("@RequestMapping(value = \"\\addAll"+className+"\", method = RequestMethod.POST");
+		mainMethodInsertAll.writeln_r("public void insertAll(List<"+classFileNameDto+"> dataList){");
+		mainMethodInsertAll.writeln_l("}");
+		
+		mainMethodUpdate.writeln("");
+		mainMethodUpdate.writeln("@RequestMapping(value = \"\\update"+className+"\", method = RequestMethod.POST");
+		mainMethodUpdate.writeln_r("public "+classFileNameDto+" update("+classFileNameDto+" data){");
+		mainMethodUpdate.writeln_l("}");
+		
+		mainMethodDelete.writeln("");
+		mainMethodDelete.writeln("@RequestMapping(value = \"\\delete"+className+"\", method = RequestMethod.POST");
+		mainMethodDelete.writeln_r("public  "+classFileNameDto+" delete("+classFileNameDto+" data){");
+		mainMethodDelete.writeln_l("}");
+		
+
+		
+		topWriter.writeln_l("}");
+		// To extract the source code, call .toString()
+		//System.out.println(topWriter.toString());
+		String path=null;
+		try {
+			path=PackageCreator.packageToDirectory(packageName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		createFile(classFileName,path,topWriter.toString());
+		printStatus(classFileName,true);
+	}
+	
+	
+	
 	public static void printStatus(String className,boolean status) {
-		System.out.println(className+" was create "+(status?"Successfull":"Fail"));
+		System.out.println(className+" was create "+(status?"Successfull":"Fail")+"\n");
 	}
 	
 	
@@ -421,13 +512,16 @@ public class FileCreator {
 	
 	public static void createFile(String className,String path,String fileText) {
 		
-		System.out.println("Create File path: "+path);
+		System.out.println("Creando archivo: "+path+"\\"+className+".java");
 		File file = new File(path+"\\"+className+".java");
 		try {
 			if(file.createNewFile()){
 			    System.out.println("Archivo "+className+".java fue creado en "+path);
 			}else{
-				System.out.println("El archivo ya existe en el directorio, ser� reemplazado");
+				System.out.println("El archivo "+className+" ya existe en el directorio, sera reemplazado");
+				file.delete();
+				System.out.println("El archivo "+className+" fue elimnado para ser reemplazado");
+				
 			}
 			FileWriter fw = new FileWriter(path+"\\"+className+".java", false);
 			fw.write(fileText);	

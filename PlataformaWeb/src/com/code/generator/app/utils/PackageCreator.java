@@ -20,7 +20,7 @@ public class PackageCreator {
 		boolean result = false;
 		try {
 
-			System.out.println(directory);
+			//System.out.println(directory);
 			File theDir = new File(directory);
 
 			if (!theDir.exists()) {
@@ -73,6 +73,9 @@ public class PackageCreator {
 		if(packageName.contains(JavaCodeGenerator.PACKAGE_DELEGATE_IMPL)) {
 			dtoPackage=packageName.replace(JavaCodeGenerator.PACKAGE_DELEGATE_IMPL, JavaCodeGenerator.PACKAGE_DTO);
 		}
+		if(packageName.contains(JavaCodeGenerator.PACKAGE_SERVICE)) {
+			dtoPackage=packageName.replace(JavaCodeGenerator.PACKAGE_SERVICE, JavaCodeGenerator.PACKAGE_DTO);
+		}
 		return dtoPackage;
 	}
 	
@@ -102,6 +105,9 @@ public class PackageCreator {
 		}
 		if(packageName.contains(JavaCodeGenerator.PACKAGE_DELEGATE_IMPL)) {
 			delegatePackage=packageName.replace(JavaCodeGenerator.PACKAGE_DELEGATE_IMPL, JavaCodeGenerator.PACKAGE_DELEGATE);
+		}
+		if(packageName.contains(JavaCodeGenerator.PACKAGE_SERVICE)) {
+			delegatePackage=packageName.replace(JavaCodeGenerator.PACKAGE_SERVICE, JavaCodeGenerator.PACKAGE_DELEGATE);
 		}
 		return delegatePackage;
 	}

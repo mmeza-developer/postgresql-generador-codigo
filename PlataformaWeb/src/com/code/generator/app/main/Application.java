@@ -21,6 +21,6 @@ public class Application implements CommandLineRunner{
     
     @Override
     public void run(String... strings) throws Exception {
-    	javaCodeGenerator.generateCode("cl.mypackage.www",true,true,true,false);
+    	javaCodeGenerator.generateCode("cl.mypackage.www",true,true,true,true);
     }
 }
