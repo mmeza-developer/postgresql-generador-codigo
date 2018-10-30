@@ -95,6 +95,14 @@ public class PackageCreator {
 		}
 		return daoPackage;
 	}
+	public static String findServicePackage(String packageName) {
+		String delegatePackage=null;
+		if(packageName.contains(JavaCodeGenerator.PACKAGE_SERVICE)) {
+			delegatePackage=packageName.replace(JavaCodeGenerator.PACKAGE_SERVICE, JavaCodeGenerator.PACKAGE_UTILS);
+		}
+		
+		return delegatePackage;
+	}
 	public static String findDelegatePackage(String packageName) {
 		String delegatePackage=null;
 		if(packageName.contains(JavaCodeGenerator.PACKAGE_SERVICE)) {

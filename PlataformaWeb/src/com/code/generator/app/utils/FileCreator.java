@@ -345,7 +345,122 @@ public class FileCreator {
 		//System.out.println(topWriter.toString());
 		printStatus(classFileName,true);
 	}
-	public static void createDelegateClassJavaFile(String className,String packageName,boolean createDelegate) {
+	
+	public static void createResponseObject(String packageName,boolean createService) {
+		PicoWriter topWriter = new PicoWriter();
+	
+		
+		
+		topWriter.writeln ("package " + packageName + ";");
+		topWriter.writeln ("");
+		
+		topWriter.writeln_r ("public class ResponseObject {");
+				
+		
+		PicoWriter varSection = topWriter.createDeferredWriter();
+		PicoWriter methodSection = topWriter.createDeferredWriter();
+		PicoWriter Constructor = methodSection.createDeferredWriter();
+		PicoWriter Constructor1 = methodSection.createDeferredWriter();
+		PicoWriter Constructor2 = methodSection.createDeferredWriter();
+		PicoWriter mainMethodSetMessage = methodSection.createDeferredWriter();
+		PicoWriter mainMethodGetMessage = methodSection.createDeferredWriter();
+		PicoWriter mainMethodSetData = methodSection.createDeferredWriter();
+		PicoWriter mainMethodGetData = methodSection.createDeferredWriter();
+		PicoWriter mainMethodSetStatus = methodSection.createDeferredWriter();
+		PicoWriter mainMethodGetStatus = methodSection.createDeferredWriter();
+		PicoWriter mainMethodSetCode = methodSection.createDeferredWriter();
+		PicoWriter mainMethodGetCode = methodSection.createDeferredWriter();
+		
+		
+		varSection.writeln("private String message;");
+		varSection.writeln("private Object data;");
+		varSection.writeln("private ResposeStatus status;");
+		varSection.writeln("private int code;");
+		varSection.writeln("");
+		
+		Constructor.writeln_r("ResponseObject(ResposeStatus status,Object data,String message,int code){");
+		Constructor.writeln("this.status=status;");
+		Constructor.writeln("this.data=data;");
+		Constructor.writeln("this.message=message;");
+		Constructor.writeln("this.code=code;");
+		Constructor.writeln_l("}");
+		Constructor.writeln_l("");
+		
+		Constructor1.writeln_r("ResponseObject(ResposeStatus status,Object data,String message){");
+		Constructor1.writeln("this.status=status;");
+		Constructor1.writeln("this.data=data;");
+		Constructor1.writeln("this.message=message;");
+		Constructor1.writeln_l("}");
+		Constructor1.writeln_l("");
+		
+		Constructor2.writeln_r("ResponseObject(ResposeStatus status,Object data){");
+		Constructor2.writeln("this.status=status;");
+		Constructor2.writeln("this.data=data;");
+		Constructor2.writeln_l("}");
+		
+		
+		mainMethodSetMessage.writeln("");
+		mainMethodSetMessage.writeln_r("public void setMessage(String data){");
+		mainMethodSetMessage.writeln("this.message=data;");
+		mainMethodSetMessage.writeln_l("}");
+		
+		mainMethodGetMessage.writeln("");
+		mainMethodGetMessage.writeln_r("public String getMessage(){");
+		mainMethodGetMessage.writeln("return message;");
+		mainMethodGetMessage.writeln_l("}");
+		
+		mainMethodSetData.writeln("");
+		mainMethodSetData.writeln_r("public void getData(Object data){");
+		mainMethodSetData.writeln("this.data=data;");
+		mainMethodSetData.writeln_l("}");
+		
+		mainMethodGetData.writeln("");
+		mainMethodGetData.writeln_r("public Object getData(){");
+		mainMethodGetData.writeln("return data;");
+		mainMethodGetData.writeln_l("}");
+		
+		mainMethodSetCode.writeln("");
+		mainMethodSetCode.writeln_r("public void setCode(int data){");
+		mainMethodSetCode.writeln("this.code=data;");
+		mainMethodSetCode.writeln_l("}");
+		
+		mainMethodGetCode.writeln("");
+		mainMethodGetData.writeln_r("public int getCode(){");
+		mainMethodGetData.writeln("return this.code;");
+		mainMethodGetData.writeln_l("}");
+		
+		mainMethodSetStatus.writeln("");
+		mainMethodSetStatus.writeln_r("public void setStatus(ResposeStatus data){");
+		mainMethodSetStatus.writeln("this.status=data;");
+		mainMethodSetStatus.writeln_l("}");
+		
+		mainMethodGetStatus.writeln("");
+		mainMethodGetStatus.writeln_r("public ResposeStatus getStatus(){");
+		mainMethodGetStatus.writeln("return this.status;");
+		mainMethodGetStatus.writeln_l("}");
+		
+		
+		
+		topWriter.writeln_l("}");
+		// To extract the source code, call .toString()
+		//System.out.println(topWriter.toString());
+		String path=null;
+		try {
+			path=PackageCreator.packageToDirectory(packageName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if(createService) {
+			createFile("ResponseObject",path,topWriter.toString());
+		}else{
+			createFileOrReplace("ResponseObject",path,topWriter.toString());
+		}
+		printStatus("ResponseObject",true);
+	}
+	
+	public static void createDelegateClassJavaFile(String className,String packageName,boolean createService) {
 		PicoWriter topWriter = new PicoWriter();
 		
 		String classFileName=TextFormat.underLineNameToCamelCase(className)+"DelegateImpl";
@@ -434,7 +549,7 @@ public class FileCreator {
 			e.printStackTrace();
 		}
 		
-		if(createDelegate) {
+		if(createService) {
 			createFile(classFileName,path,topWriter.toString());
 		}else{
 			createFileOrReplace(classFileName,path,topWriter.toString());
@@ -442,6 +557,31 @@ public class FileCreator {
 		printStatus(classFileName,true);
 	}
 	
+	public static void createEnumEstatusWsResponse(String packageName,boolean createService) {
+		PicoWriter topWriter = new PicoWriter();
+		
+		topWriter.writeln ("package " + packageName + ";");
+
+		topWriter.writeln ("public enum ResposeStatus {"+
+		    "ERROR,"+
+		    "SUCCESSFUL,"+
+		    "WARNING;"+
+		    "}");
+		
+		String path=null;
+		try {
+			path=PackageCreator.packageToDirectory(packageName);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(createService) {
+			createFile("ResposeStatus",path,topWriter.toString());
+		}else{
+			createFileOrReplace("ResposeStatus",path,topWriter.toString());
+		}
+		printStatus("ResposeStatus",true);
+	}
 	public static void createServiceClassJavaFile(String className,String packageName,boolean createService) {
 		PicoWriter topWriter = new PicoWriter();
 		
@@ -451,11 +591,14 @@ public class FileCreator {
 		String varNameDelegate=TextFormat.underLineNameToCamelCaseNonFirstLetter(className)+"Delegate";
 		String packageImportDto=PackageCreator.findDtoPackage(packageName);
 		String packageImportDelegate=PackageCreator.findDelegatePackage(packageName);
+		String packageImportUtils=PackageCreator.findServicePackage(packageName);
 		
 		
 		topWriter.writeln ("package " + packageName + ";");
 		topWriter.writeln ("import " +packageImportDto+"."+ classFileNameDto + ";");
 		topWriter.writeln ("import " +packageImportDelegate+"."+ classFileNameDelegate + ";");
+		topWriter.writeln ("import " +packageImportUtils+".ResposeStatus;");
+		topWriter.writeln ("import " +packageImportUtils+".ResponseObject;");
 		topWriter.writeln ("import java.util.List;");
 		topWriter.writeln ("import org.springframework.beans.factory.annotation.Autowired;");
 		
@@ -468,7 +611,7 @@ public class FileCreator {
 		topWriter.writeln ("");
 		
 		topWriter.writeln ("@RestController");
-		topWriter.writeln ("@RequestMapping(\"\\"+className.toLowerCase()+"\")");
+		topWriter.writeln ("@RequestMapping(\"/"+className.toLowerCase()+"\")");
 		topWriter.writeln_r ("public class "+classFileName+"{"
 		);
 		PicoWriter varSection = topWriter.createDeferredWriter();
@@ -486,35 +629,37 @@ public class FileCreator {
 
 
 		mainMethodFind.writeln("");
-		mainMethodFind.writeln("@RequestMapping(value = \"\\find"+className+"ById\", method = RequestMethod.GET)");
-		mainMethodFind.writeln_r("public " + classFileNameDto +" findById(int id){");
+		mainMethodFind.writeln("@RequestMapping(value = \"/find"+className+"ById\", method = RequestMethod.GET)");
+		mainMethodFind.writeln_r("public ResponseObject findById(int id){");
 		mainMethodFind.writeln("return null;");
 		mainMethodFind.writeln_l("}");
 		
 		mainMethodFindAll.writeln("");
-		mainMethodFindAll.writeln("@RequestMapping(value = \"\\findAll"+className+"\", method = RequestMethod.GET)");
-		mainMethodFindAll.writeln_r("public List<" +classFileNameDto+"> findAll(){");
+		mainMethodFindAll.writeln("@RequestMapping(value = \"/findAll"+className+"\", method = RequestMethod.GET)");
+		mainMethodFindAll.writeln_r("public ResponseObject findAll(){");
 		mainMethodFindAll.writeln("return null;");
 		mainMethodFindAll.writeln_l("}");
 		
 		mainMethodInsert.writeln("");
-		mainMethodInsert.writeln("@RequestMapping(value = \"\\add"+className+"\", method = RequestMethod.POST");
-		mainMethodInsert.writeln_r("public void insert("+classFileNameDto+" data){");
+		mainMethodInsert.writeln("@RequestMapping(value = \"/add"+className+"\", method = RequestMethod.POST)");
+		mainMethodInsert.writeln_r("public ResponseObject insert("+classFileNameDto+" data){");
 		mainMethodInsert.writeln_l("}");
 		
 		mainMethodInsertAll.writeln("");
-		mainMethodInsertAll.writeln("@RequestMapping(value = \"\\addAll"+className+"\", method = RequestMethod.POST");
-		mainMethodInsertAll.writeln_r("public void insertAll(List<"+classFileNameDto+"> dataList){");
+		mainMethodInsertAll.writeln("@RequestMapping(value = \"/addAll"+className+"\", method = RequestMethod.POST)");
+		mainMethodInsertAll.writeln_r("public ResponseObject insertAll(List<"+classFileNameDto+"> dataList){");
 		mainMethodInsertAll.writeln_l("}");
 		
 		mainMethodUpdate.writeln("");
-		mainMethodUpdate.writeln("@RequestMapping(value = \"\\update"+className+"\", method = RequestMethod.POST");
-		mainMethodUpdate.writeln_r("public "+classFileNameDto+" update("+classFileNameDto+" data){");
+		mainMethodUpdate.writeln("@RequestMapping(value = \"/update"+className+"\", method = RequestMethod.POST)");
+		mainMethodUpdate.writeln_r("public ResponseObject update("+classFileNameDto+" data){");
+		mainMethodUpdate.writeln("return null;");
 		mainMethodUpdate.writeln_l("}");
 		
 		mainMethodDelete.writeln("");
-		mainMethodDelete.writeln("@RequestMapping(value = \"\\delete"+className+"\", method = RequestMethod.POST");
-		mainMethodDelete.writeln_r("public  "+classFileNameDto+" delete("+classFileNameDto+" data){");
+		mainMethodDelete.writeln("@RequestMapping(value = \"/delete"+className+"\", method = RequestMethod.POST)");
+		mainMethodDelete.writeln_r("public  ResponseObject delete("+classFileNameDto+" data){");
+		mainMethodDelete.writeln("return null;");
 		mainMethodDelete.writeln_l("}");
 		
 

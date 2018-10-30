@@ -21,13 +21,16 @@ public class JavaCodeGenerator {
 	 public static final String PACKAGE_DELEGATE=".delegate";
 	 public static final String PACKAGE_DELEGATE_IMPL=".delegate.impl";
 	 public static final String PACKAGE_SERVICE=".service";
+	 public static final String PACKAGE_UTILS=".utils";
 	 
 	
 	public  void generateCode(String packageBase,boolean createDto,
 			boolean createDao,boolean createDelegate,boolean createService) {
 		
 
-		generatePackage("cl.package.www",createDto, createDao,createDelegate,createService);
+		generatePackage(packageBase,createDto, createDao,createDelegate,createService);
+		
+		
 		
 		List<TableDto> tables=kioskeroWebDao.getAllTables(SCHEMA);
     	
@@ -71,6 +74,9 @@ public class JavaCodeGenerator {
 		}
 		if(createService) {
 			PackageCreator.createPackage(packageBase+".service");
+			PackageCreator.createPackage(packageBase+".utils");
+			FileCreator.createEnumEstatusWsResponse(packageBase+PACKAGE_UTILS, createService);
+			FileCreator.createResponseObject(packageBase+PACKAGE_UTILS, createService);
 		}
 	}
 }
