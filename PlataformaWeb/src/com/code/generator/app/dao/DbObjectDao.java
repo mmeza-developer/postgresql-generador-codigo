@@ -13,7 +13,7 @@ import com.code.generator.app.dto.TableDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Repository
-public class KioskeroWebDao  {
+public class DbObjectDao  {
 	@Autowired
     JdbcTemplate jdbcTemplate;
 	

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.code.generator.app.dao.KioskeroWebDao;
+import com.code.generator.app.dao.DbObjectDao;
 import com.code.generator.app.dto.ColumnDto;
 import com.code.generator.app.dto.TableDto;
 
@@ -13,7 +13,7 @@ import com.code.generator.app.dto.TableDto;
 public class JavaCodeGenerator {
 	
 	 @Autowired
-	 KioskeroWebDao kioskeroWebDao;
+	 DbObjectDao kioskeroWebDao;
 	 public static final String SCHEMA="public";
 	 public static final String PACKAGE_DTO=".dto";
 	 public static final String PACKAGE_DAO=".dao";
@@ -41,20 +41,15 @@ public class JavaCodeGenerator {
 	public void generateJavaCode(String tableName,List<ColumnDto> columns,String packageBase,boolean createDto,
 			boolean createDao,boolean createDelegate,boolean createService) {
 		
-    		if(createDto) {
-    			FileCreator.createDtoClassJavaFile(tableName, columns, packageBase+PACKAGE_DTO);
-    		}
-    		if(createDao) {
-    			FileCreator.createDaoInterfaceJavaFile(tableName,  packageBase+PACKAGE_DAO);
-    			FileCreator.createDaoClassJavaFile(tableName,  packageBase+PACKAGE_DAO_IMPL);
-    		}
-    		if(createDelegate) {
-    			FileCreator.createDelegateInterfaceJavaFile(tableName,  packageBase+PACKAGE_DELEGATE);
-    			FileCreator.createDelegateClassJavaFile(tableName,  packageBase+PACKAGE_DELEGATE_IMPL);
-    		}
-    		if(createService) {
-    			FileCreator.createServiceClassJavaFile(tableName,  packageBase+PACKAGE_SERVICE);
-    		}
+    			FileCreator.createDtoClassJavaFile(tableName, columns, packageBase+PACKAGE_DTO,createDto);
+    			
+    			FileCreator.createDaoInterfaceJavaFile(tableName,  packageBase+PACKAGE_DAO,createDao);
+    			FileCreator.createDaoClassJavaFile(tableName,  packageBase+PACKAGE_DAO_IMPL,columns,createDao);
+    			
+    			FileCreator.createDelegateInterfaceJavaFile(tableName,  packageBase+PACKAGE_DELEGATE,createDelegate);
+    			FileCreator.createDelegateClassJavaFile(tableName,  packageBase+PACKAGE_DELEGATE_IMPL,createDelegate);
+    			
+    			FileCreator.createServiceClassJavaFile(tableName,  packageBase+PACKAGE_SERVICE,createService);
 		
 	}
 	

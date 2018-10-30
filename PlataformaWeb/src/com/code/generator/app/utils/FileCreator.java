@@ -34,7 +34,7 @@ public class FileCreator {
 		
 		return libraryImport;
 	}
-	public static void createDtoClassJavaFile(String className,List<ColumnDto> columnsList,String packageName) {
+	public static void createDtoClassJavaFile(String className,List<ColumnDto> columnsList,String packageName,boolean createDto) {
 		PicoWriter topWriter = new PicoWriter();
 		
 		String classFileName=TextFormat.underLineNameToCamelCase(className)+"Dto";
@@ -108,12 +108,16 @@ public class FileCreator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		createFile(classFileName,path,topWriter.toString());
+		if(createDto) {
+			createFile(classFileName,path,topWriter.toString());
+		}else{
+			createFileOrReplace(classFileName,path,topWriter.toString());
+		}
 		printStatus(classFileName,true);
 	}
 	
 	
-	public static void createDaoInterfaceJavaFile(String className,String packageName) {
+	public static void createDaoInterfaceJavaFile(String className,String packageName,boolean createDao) {
 		PicoWriter topWriter = new PicoWriter();
 		
 		String classFileName=TextFormat.underLineNameToCamelCase(className)+"Dao";
@@ -164,13 +168,18 @@ public class FileCreator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		createFile(classFileName,path,topWriter.toString());
+		if(createDao) {
+			createFile(classFileName,path,topWriter.toString());
+		}else{
+			createFileOrReplace(classFileName,path,topWriter.toString());
+		}
 		//System.out.println(topWriter.toString());
 		printStatus(classFileName,true);
+		
 	}
 	
 	
-	public static void createDaoClassJavaFile(String className,String packageName) {
+	public static void createDaoClassJavaFile(String className,String packageName,List<ColumnDto> columnsList,boolean createDao) {
 		PicoWriter topWriter = new PicoWriter();
 		
 		String classFileName=TextFormat.underLineNameToCamelCase(className)+"DaoImpl";
@@ -186,6 +195,7 @@ public class FileCreator {
 		topWriter.writeln ("import org.springframework.beans.factory.annotation.Autowired;");
 		topWriter.writeln ("import org.springframework.stereotype.Repository;");
 		topWriter.writeln ("import org.springframework.jdbc.core.JdbcTemplate;");
+		topWriter.writeln ("import org.springframework.jdbc.core.BeanPropertyRowMapper;");
 		topWriter.writeln ("");
 		
 		topWriter.writeln ("@Repository");
@@ -208,13 +218,28 @@ public class FileCreator {
 		mainMethodFind.writeln("");
 		mainMethodFind.writeln("@Override");
 		mainMethodFind.writeln_r("public " + classFileNameDto + " find("+classFileNameDto+" data){");
-		mainMethodFind.writeln("return null;");
+		
+		List<ColumnDto> columns=null;
+	
+		mainMethodFind.writeln(classFileNameDto+" objtReturn=null;");
+		mainMethodFind.writeln("objtReturn=("+classFileNameDto+")jdbcTemplate.query(\"SELECT \"+");
+		mainMethodFind.writeln(getListColumnsForSqlQuery(columnsList));
+		mainMethodFind.writeln("\"FROM "+className+" \"");
+		mainMethodFind.writeln(",new Object[]{}");
+		mainMethodFind.writeln(",new BeanPropertyRowMapper("+classFileNameDto+".class));");
+		mainMethodFind.writeln("return objtReturn;");
 		mainMethodFind.writeln_l("}");
 		
 		mainMethodFindAll.writeln("");
 		mainMethodFindAll.writeln("@Override");
 		mainMethodFindAll.writeln_r("public List<" + classFileNameDto + "> findAll(){");
-		mainMethodFindAll.writeln("return null;");
+		mainMethodFindAll.writeln("List<"+classFileNameDto+"> columns=null;");
+		mainMethodFindAll.writeln("columns=jdbcTemplate.query(\"SELECT \"+");
+		mainMethodFindAll.writeln(getListColumnsForSqlQuery(columnsList));
+		mainMethodFindAll.writeln("\" FROM "+className+"\"");
+		mainMethodFindAll.writeln(",new Object[]{}");
+		mainMethodFindAll.writeln(",new BeanPropertyRowMapper("+classFileNameDto+".class));");
+		mainMethodFindAll.writeln("return columns;");
 		mainMethodFindAll.writeln_l("}");
 		
 		mainMethodInsert.writeln("");
@@ -248,12 +273,18 @@ public class FileCreator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		createFile(classFileName,path,topWriter.toString());
+		
+		if(createDao) {
+			createFile(classFileName,path,topWriter.toString());
+		}else{
+			createFileOrReplace(classFileName,path,topWriter.toString());
+		}
 		//System.out.println(topWriter.toString());
 		printStatus(classFileName,true);
 	}
 	
-	public static void createDelegateInterfaceJavaFile(String className,String packageName) {
+	
+	public static void createDelegateInterfaceJavaFile(String className,String packageName,boolean createDelegate) {
 		PicoWriter topWriter = new PicoWriter();
 		
 		String classFileName=TextFormat.underLineNameToCamelCase(className)+"Delegate";
@@ -305,11 +336,16 @@ public class FileCreator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		createFile(classFileName,path,topWriter.toString());
+		
+		if(createDelegate) {
+			createFile(classFileName,path,topWriter.toString());
+		}else{
+			createFileOrReplace(classFileName,path,topWriter.toString());
+		}
 		//System.out.println(topWriter.toString());
 		printStatus(classFileName,true);
 	}
-	public static void createDelegateClassJavaFile(String className,String packageName) {
+	public static void createDelegateClassJavaFile(String className,String packageName,boolean createDelegate) {
 		PicoWriter topWriter = new PicoWriter();
 		
 		String classFileName=TextFormat.underLineNameToCamelCase(className)+"DelegateImpl";
@@ -352,33 +388,37 @@ public class FileCreator {
 		mainMethodFind.writeln("");
 		mainMethodFind.writeln("@Override");
 		mainMethodFind.writeln_r("public " + classFileNameDto +" find("+classFileNameDto+" data){");
-		mainMethodFind.writeln("return null;");
+		mainMethodFind.writeln("return "+classVarFileNameDao+".find(data);");
 		mainMethodFind.writeln_l("}");
 		
 		mainMethodFindAll.writeln("");
 		mainMethodFindAll.writeln("@Override");
 		mainMethodFindAll.writeln_r("public List<" +classFileNameDto+"> findAll(){");
-		mainMethodFindAll.writeln("return null;");
+		mainMethodFindAll.writeln("return "+classVarFileNameDao+".findAll();");
 		mainMethodFindAll.writeln_l("}");
 		
 		mainMethodInsert.writeln("");
 		mainMethodInsert.writeln("@Override");
 		mainMethodInsert.writeln_r("public void insert("+classFileNameDto+" data){");
+		mainMethodInsert.writeln_r(classVarFileNameDao+".insert(data);");
 		mainMethodInsert.writeln_l("}");
 		
 		mainMethodInsertAll.writeln("");
 		mainMethodInsertAll.writeln("@Override");
 		mainMethodInsertAll.writeln_r("public void insertAll(List<"+classFileNameDto+"> dataList){");
+		mainMethodInsertAll.writeln_r(classVarFileNameDao+".insertAll(dataList);");
 		mainMethodInsertAll.writeln_l("}");
 		
 		mainMethodUpdate.writeln("");
 		mainMethodUpdate.writeln("@Override");
 		mainMethodUpdate.writeln_r("public void update("+classFileNameDto+" data){");
+		mainMethodUpdate.writeln_r(classVarFileNameDao+".update(data);");
 		mainMethodUpdate.writeln_l("}");
 		
 		mainMethodDelete.writeln("");
 		mainMethodDelete.writeln("@Override");
 		mainMethodDelete.writeln_r("public void delete("+classFileNameDto+" data){");
+		mainMethodDelete.writeln_r(classVarFileNameDao+".delete(data);");
 		mainMethodDelete.writeln_l("}");
 		
 
@@ -393,11 +433,16 @@ public class FileCreator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		createFile(classFileName,path,topWriter.toString());
+		
+		if(createDelegate) {
+			createFile(classFileName,path,topWriter.toString());
+		}else{
+			createFileOrReplace(classFileName,path,topWriter.toString());
+		}
 		printStatus(classFileName,true);
 	}
 	
-	public static void createServiceClassJavaFile(String className,String packageName) {
+	public static void createServiceClassJavaFile(String className,String packageName,boolean createService) {
 		PicoWriter topWriter = new PicoWriter();
 		
 		String classFileName=TextFormat.underLineNameToCamelCase(className)+"Service";
@@ -484,7 +529,11 @@ public class FileCreator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		createFile(classFileName,path,topWriter.toString());
+		if(createService) {
+			createFile(classFileName,path,topWriter.toString());
+		}else{
+			createFileOrReplace(classFileName,path,topWriter.toString());
+		}
 		printStatus(classFileName,true);
 	}
 	
@@ -494,29 +543,16 @@ public class FileCreator {
 		System.out.println(className+" was create "+(status?"Successfull":"Fail")+"\n");
 	}
 	
-	
-	public static void createFilev2(String className,String path,String fileText) {
-		String fileData = "Pankaj Kumar";
-		FileOutputStream fos=null;
-		try {
-			fos = new FileOutputStream(path+"\\"+className+".java");
-			fos.write(fileText.getBytes());
-			fos.flush();
-			fos.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 	
 	
-	public static void createFile(String className,String path,String fileText) {
+	public static void createFileOrReplace(String className,String path,String fileText) {
 		
 		System.out.println("Creando archivo: "+path+"\\"+className+".java");
 		File file = new File(path+"\\"+className+".java");
 		try {
 			if(file.createNewFile()){
-			    System.out.println("Archivo "+className+".java fue creado en "+path);
+				System.out.println("Archivo "+className+".java fue creado en "+path);
 			}else{
 				System.out.println("El archivo "+className+" ya existe en el directorio, sera reemplazado");
 				file.delete();
@@ -531,6 +567,40 @@ public class FileCreator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public static void createFile(String className,String path,String fileText) {
+		
+		System.out.println("Creando archivo: "+path+"\\"+className+".java");
+		File file = new File(path+"\\"+className+".java");
+		try {
+			if(file.createNewFile()){
+			    System.out.println("Archivo "+className+".java fue creado en "+path);
+			
+			FileWriter fw = new FileWriter(path+"\\"+className+".java", false);
+			fw.write(fileText);	
+			fw.flush();
+			fw.close();
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	public static String getListColumnsForSqlQuery(List<ColumnDto> columnsList) {
+		String  returnString="";
+		int lastElement=columnsList.size();
+		int count=0;
+		for(ColumnDto column: columnsList) {
+			if(count<lastElement-1) {
+				returnString+="\""+column.getColumnName()+",\"\n+";
+			}else {
+				returnString+=column.getColumnName()+"\"\n";
+			}
+		}
+		
+		return returnString;
 	}
 	
 	
