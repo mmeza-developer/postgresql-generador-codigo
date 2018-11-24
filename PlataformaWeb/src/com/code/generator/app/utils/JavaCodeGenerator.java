@@ -22,10 +22,20 @@ public class JavaCodeGenerator {
 	 public static final String PACKAGE_DELEGATE_IMPL=".delegate.impl";
 	 public static final String PACKAGE_SERVICE=".service";
 	 public static final String PACKAGE_UTILS=".utils";
+
+	 
+	public boolean fileOptions(FileOptions options){
+		boolean value=false;
+		if(options == FileOptions.CREATE) {
+			value=true;
+		}
+		return value;
+	} 
+	 
 	 
 	
-	public  void generateCode(String packageBase,boolean createDto,
-			boolean createDao,boolean createDelegate,boolean createService) {
+	public  void generateCode(String packageBase,FileOptions createDto,
+			FileOptions createDao,FileOptions createDelegate,FileOptions createService) {
 		
 
 		generatePackage(packageBase,createDto, createDao,createDelegate,createService);
@@ -36,47 +46,63 @@ public class JavaCodeGenerator {
     	
     	for(TableDto table : tables) {
     		List<ColumnDto> columns=kioskeroWebDao.getAllColumnFromTable(table.getTableName(), SCHEMA);
-    		generateJavaCode(table.getTableName(),columns,packageBase,createDto,createDao,createDelegate,createService);
+    		generateJavaCode(table.getTableName(),columns,packageBase,(createDto),(createDao),(createDelegate),(createService));
     	}
 		
 	}
 	
-	public void generateJavaCode(String tableName,List<ColumnDto> columns,String packageBase,boolean createDto,
-			boolean createDao,boolean createDelegate,boolean createService) {
-		
-    			FileCreator.createDtoClassJavaFile(tableName, columns, packageBase+PACKAGE_DTO,createDto);
-    			
-    			FileCreator.createDaoInterfaceJavaFile(tableName,  packageBase+PACKAGE_DAO,createDao);
-    			FileCreator.createDaoClassJavaFile(tableName,  packageBase+PACKAGE_DAO_IMPL,columns,createDao);
-    			
-    			FileCreator.createDelegateInterfaceJavaFile(tableName,  packageBase+PACKAGE_DELEGATE,createDelegate);
-    			FileCreator.createDelegateClassJavaFile(tableName,  packageBase+PACKAGE_DELEGATE_IMPL,createDelegate);
-    			
-    			FileCreator.createServiceClassJavaFile(tableName,  packageBase+PACKAGE_SERVICE,createService);
-		
+	public void generateJavaCode(String tableName,List<ColumnDto> columns,
+			String packageBase,FileOptions createDto,
+			FileOptions createDao,FileOptions createDelegate,FileOptions createService) {
+		if(FileOptions.CREATE==createDto || FileOptions.CREATE_OR_REPLACE==createDto) {
+		FileCreator.createDtoClassJavaFile(tableName, columns, packageBase+PACKAGE_DTO,fileOptions(createDto));
+		}
+		if(FileOptions.CREATE==createDao || FileOptions.CREATE_OR_REPLACE==createDao) {
+		FileCreator.createDaoInterfaceJavaFile(tableName,  packageBase+PACKAGE_DAO,fileOptions(createDao));
+		FileCreator.createDaoClassJavaFile(tableName,  packageBase+PACKAGE_DAO_IMPL,columns,fileOptions(createDao));
+		}
+		if(FileOptions.CREATE==createDelegate || FileOptions.CREATE_OR_REPLACE==createDelegate) {
+			FileCreator.createDelegateInterfaceJavaFile(tableName,  packageBase+PACKAGE_DELEGATE,fileOptions(createDelegate));
+			FileCreator.createDelegateClassJavaFile(tableName,  packageBase+PACKAGE_DELEGATE_IMPL,fileOptions(createDelegate));
+		}
+		if(FileOptions.CREATE_WEB_CLIENT==createDelegate) {
+		FileCreator.createDelegateInterfaceJavaFile(tableName,  packageBase+PACKAGE_DELEGATE,fileOptions(createDelegate));
+		FileCreator.createDelegateClassForWsJavaFile(tableName,  packageBase+PACKAGE_DELEGATE_IMPL,fileOptions(createDelegate));
+		}
+		if(FileOptions.CREATE==createService || FileOptions.CREATE_OR_REPLACE==createService) {
+		FileCreator.createServiceClassJavaFile(tableName,  packageBase+PACKAGE_SERVICE,columns,fileOptions(createService));
+		}
 	}
+
 	
 	
 	
-	public  void generatePackage(String packageBase,boolean createDto,
-			boolean createDao,boolean createDelegate,boolean createService) {
+	public  void generatePackage(String packageBase,FileOptions createDto,
+			FileOptions createDao,FileOptions createDelegate,FileOptions createService) {
 		PackageCreator.createPackage(packageBase);
-		if(createDto) {
-			PackageCreator.createPackage(packageBase+".dto");
+		if(FileOptions.CREATE==createDto) {
+			PackageCreator.createPackage(packageBase+PACKAGE_DTO);
 		}
-		if(createDao) {
-			PackageCreator.createPackage(packageBase+".dao");
-			PackageCreator.createPackage(packageBase+".dao.impl");
+		if(FileOptions.CREATE==createDao ) {
+			PackageCreator.createPackage(packageBase+PACKAGE_DAO);
+			PackageCreator.createPackage(packageBase+PACKAGE_DAO_IMPL);
 		}
-		if(createDelegate) {
-			PackageCreator.createPackage(packageBase+".delegate");
-			PackageCreator.createPackage(packageBase+".delegate.impl");
+		if(FileOptions.CREATE==createDelegate ) {
+			PackageCreator.createPackage(packageBase+PACKAGE_DELEGATE);
+			PackageCreator.createPackage(packageBase+PACKAGE_DELEGATE_IMPL);
 		}
-		if(createService) {
-			PackageCreator.createPackage(packageBase+".service");
-			PackageCreator.createPackage(packageBase+".utils");
-			FileCreator.createEnumEstatusWsResponse(packageBase+PACKAGE_UTILS, createService);
-			FileCreator.createResponseObject(packageBase+PACKAGE_UTILS, createService);
+		if(FileOptions.CREATE==createService ) {
+			PackageCreator.createPackage(packageBase+PACKAGE_SERVICE);
+			PackageCreator.createPackage(packageBase+PACKAGE_UTILS);
+		}
+		if(FileOptions.CREATE==createService || FileOptions.CREATE_OR_REPLACE==createService || FileOptions.CREATE_WEB_CLIENT==createService ) {
+			FileCreator.createEnumEstatusWsResponse(packageBase+PACKAGE_UTILS,fileOptions( createService));
+			FileCreator.createResponseObject(packageBase+PACKAGE_UTILS, fileOptions(createService));
+			FileCreator.createWsOperationValidation(packageBase+PACKAGE_UTILS, fileOptions(createService));
+			FileCreator.createErrorMessage(packageBase+PACKAGE_UTILS, fileOptions(createService));
+			FileCreator.createFileToArrayCreator(packageBase+PACKAGE_UTILS, fileOptions(createService));
+			FileCreator.createFileBaseUrl(packageBase+PACKAGE_UTILS, fileOptions(createService));
+			FileCreator.createFileJsonConverter(packageBase+PACKAGE_UTILS, fileOptions(createService));
 		}
 	}
 }

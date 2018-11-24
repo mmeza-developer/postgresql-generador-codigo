@@ -19,13 +19,38 @@ public class DBJavaConverter {
 			}else if(type!=null && type.equals("bigint")) {
 				javaType="Long";
 			}else if(type!=null && type.equals("real")) {
-				javaType="float";
+				javaType="Float";
 			}else if(type!=null && type.equals("ARRAY")) {
 				javaType="Object[]";
 			}else if(type!=null && type.equals("boolean")) {
 				javaType="Boolean";
 			}else if(type!=null && type.equals("integer")) {
 				javaType="Integer";
+			}else if(type!=null && type.equals("text")) {
+				javaType="String";
+			}
+		}
+		
+		return javaType;
+	}
+	
+	public static String JavaTypeConverterForSqlOperations(String type) {
+		String javaType=null;
+		if(type!=null && !type.equals("")) {
+			if(type.equals("date")) {
+				javaType="Date";
+			}else if(type!=null && type.equals("character varying")) {
+				javaType="String";
+			}else if(type!=null && type.equals("bigint")) {
+				javaType="Long";
+			}else if(type!=null && type.equals("real")) {
+				javaType="Float";
+			}else if(type!=null && type.equals("ARRAY")) {
+				javaType="Array";
+			}else if(type!=null && type.equals("boolean")) {
+				javaType="Boolean";
+			}else if(type!=null && type.equals("integer")) {
+				javaType="Int";
 			}else if(type!=null && type.equals("text")) {
 				javaType="String";
 			}

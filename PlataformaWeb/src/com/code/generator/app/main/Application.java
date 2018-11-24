@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.code.generator.app.utils.FileOptions;
 import com.code.generator.app.utils.JavaCodeGenerator;
 
 @SpringBootApplication
@@ -21,6 +22,10 @@ public class Application implements CommandLineRunner{
     
     @Override
     public void run(String... strings) throws Exception {
-    	javaCodeGenerator.generateCode("cl.mypackage.www",true,false,true,true);
+    	javaCodeGenerator.generateCode("cl.admin.ws",
+    			FileOptions.CREATE_OR_REPLACE,
+    			FileOptions.CREATE_OR_REPLACE,
+    			FileOptions.CREATE_WEB_CLIENT,
+    			FileOptions.CREATE_OR_REPLACE);
     }
 }
